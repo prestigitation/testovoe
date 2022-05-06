@@ -20,10 +20,10 @@ class UserService {
     }
 
     public function editCar(int $userId, int $carId) {
-        $user = User::find($userId);
-        $user->car()->dissociate();
-        $carInRelationExists = User::where('car_id', $carId);
-        if(!$carInRelationExists) {
+        $carInRelationExists = User::where('car_id', $carId)->get();
+        if(!count($carInRelationExists)) {
+            $user = User::find($userId);
+            $user->car()->dissociate();
             $user->car()->associate($carId);
             $user->save();
         } else throw new \Exception('Данный автомобиль уже привязан');

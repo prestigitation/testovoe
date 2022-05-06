@@ -17,9 +17,13 @@ class CarTest extends TestCase
     {
         Sanctum::actingAs(
             User::factory()->create(),
-            ['editCars', 'seeCarInfo']
+            ['editCars']
         );
         $admin = User::find(1);
+        if(isset($admin->car)) {
+            $admin->car()->dissociate();
+        }
+        $admin->save();
         $response = $this->json('POST', '/api/user/1/car/2');
         $response
             ->assertStatus(200);
@@ -34,11 +38,14 @@ class CarTest extends TestCase
     {
         Sanctum::actingAs(
             User::factory()->create(),
-            ['editCars', 'seeCarInfo']
+            ['editCars']
         );
         $admin = User::find(1);
-        $admin->car()->dissociate();
+        if(isset($admin->car)) {
+            $admin->car()->dissociate();
+        }
         $admin->car()->associate(2);
+        $admin->save();
         $response = $this->json('DELETE', '/api/user/1/car/2');
         $response
             ->assertStatus(200);
